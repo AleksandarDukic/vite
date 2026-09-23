@@ -1,0 +1,10 @@
+{
+	"nodes":[
+		{"id":"281931fee53a9fc8","x":-27,"y":-53,"width":250,"height":60,"type":"text","text":"MessageBus\n"},
+		{"id":"1615fe20c8b86dfb","x":-560,"y":-56,"width":160,"height":63,"type":"text","text":"DOM listener\n"},
+		{"id":"0d54b8dc67210d68","x":81,"y":67,"width":250,"height":60,"type":"text","text":"MessageProcessing System\n"}
+	],
+	"edges":[
+		{"id":"acf8cdc8e95f16b0","fromNode":"1615fe20c8b86dfb","fromSide":"right","toNode":"281931fee53a9fc8","toSide":"left","color":"2","label":"schedule"}
+	]
+}
