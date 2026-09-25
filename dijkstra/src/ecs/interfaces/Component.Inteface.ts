@@ -1,3 +1,3 @@
 
-export interface IComponent {
+export interface Component {
 }

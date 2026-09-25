@@ -1,20 +1,18 @@
-import type { MessageBus } from "./Bus";
 import type { Command } from "./Command";
 import type { Event } from "./Event";
-import type { ScheduledCommandMessage, ScheduledEventMessage, ScheduledMessage, ScheduledMessageProcessor, ScheduleOptions } from "./Scheduler";
 
-type EventHandler<EventType extends Event = Event> = (
+export type EventHandler<EventType extends Event = Event> = (
 	event: EventType,
 ) => Promise<void> | void;
 
-export interface EventProcessor {
+export type EventProcessor = {
 	subscribe<EventType extends Event>(
 		eventHandler: EventHandler<EventType>,
 		...eventTypes: EventTypeOf<EventType>[]
 	): void;
 }
 
-type CommandHandler<CommandType extends Command = Command> = (
+export type CommandHandler<CommandType extends Command = Command> = (
 	command: CommandType,
 ) => Promise<void> | void;
 
@@ -25,127 +23,10 @@ export interface CommandProcessor {
 	): void;
 }
 
-type CommandTypeOf<T extends Command> = T['type'];
+export type CommandTypeOf<T extends Command> = T['type'];
 
-type EventTypeOf<T extends Event> = T['type'];
+export type EventTypeOf<T extends Event> = T['type'];
 
+export type MessageHandler = EventHandler | CommandHandler;
 
-type MessageHandler = EventHandler | CommandHandler;
-
-export type MessageProcessor = EventProcessor | CommandProcessor;
-
-export type MessagingService = & MessageBus & MessageProcessor & ScheduledMessageProcessor
-
-export const getInMemoryMessageBus = ():
-	MessagingService => {
-
-	const allHandlers = new Map<string, MessageHandler[]>();
-	let pendingMessages: ScheduledMessage[] = [];
-	let pendingEventMessages: ScheduledEventMessage[] = [];
-	let pendingCommandMessages: ScheduledCommandMessage[] = []
-
-	return {
-		subscribe<EventType extends Event>(
-			eventHandler: EventHandler<EventType>,
-			...eventTypes: EventTypeOf<EventType>[]
-		): void {
-			for (const eventType of eventTypes) {
-				if (!allHandlers.has(eventType)) allHandlers.set(eventType, []);
-
-				allHandlers.set(eventType, [
-					...(allHandlers.get(eventType) ?? []),
-					eventHandler as MessageHandler,
-				]);
-			}
-		},
-
-		publish: async <EventType extends Event = Event>(
-			event: EventType,
-		): Promise<void> => {
-			const handlers = allHandlers.get(event.type) ?? [];
-
-			for (const handler of handlers) {
-				const eventHandler = handler as EventHandler<EventType>;
-
-				await eventHandler(event);
-			}
-		},
-
-		send: async <CommandType extends Command = Command>(
-			command: CommandType,
-		): Promise<void> => {
-			const handlers = allHandlers.get(command.type);
-
-			if (handlers === undefined || handlers.length === 0)
-				throw new Error(
-					`No handler registered for command ${command.type}!`,
-				);
-
-			const commandHandler = handlers[0] as CommandHandler<CommandType>;
-
-			await commandHandler(command);
-		},
-		handle: <CommandType extends Command>(
-			commandHandler: CommandHandler<CommandType>,
-			...commandTypes: CommandTypeOf<CommandType>[]
-		): void => {
-			const alreadyRegistered = [...allHandlers.keys()].filter((registered) =>
-				commandTypes.includes(registered),
-			);
-
-			if (alreadyRegistered.length > 0)
-				throw new Error(
-					`Cannot register handler for commands ${alreadyRegistered.join(', ')} as they're already registered!`,
-				);
-			for (const commandType of commandTypes) {
-				allHandlers.set(commandType, [commandHandler as MessageHandler]);
-			}
-		},
-
-		schedule: async <MessageType extends Command | Event>(
-			message: MessageType,
-			when?: ScheduleOptions,
-		): Promise<void> => {
-			pendingMessages = [...pendingMessages, { message, options: when }];
-		},
-
-		scheduleEvent: async (
-			message: Event,
-			when?: ScheduleOptions,
-		): Promise<void> => {
-			pendingEventMessages = [...pendingEventMessages, { message, options: when }];
-		},
-		scheduleCommand: async (
-			message: Command,
-			when?: ScheduleOptions,
-		): Promise<void> => {
-			pendingCommandMessages = [...pendingCommandMessages, { message, options: when }];
-		},
-
-		dequeue: (): ScheduledMessage[] => {
-			const pending = pendingMessages;
-			pendingMessages = [];
-			return pending;
-		},
-		getPendingMessages: (): ScheduledMessage[] => {
-			return pendingMessages
-		},
-		
-		getPendingEventMessages: (): ScheduledEventMessage[] => {
-			return pendingEventMessages;
-		},
-		deletePendingEventMessages: (): void => {
-			pendingEventMessages = [];
-		},
-
-		getPendingCommandMessages:(): ScheduledCommandMessage[] => {
-			return pendingCommandMessages;
-		},
-		deletePendingCommandMessages: (): void => {
-			pendingCommandMessages = [];
-		},
-
-		// (...) here will go the interfaces methods definition
-	}
-
-};
+export type MessageProcessor = EventProcessor & CommandProcessor;

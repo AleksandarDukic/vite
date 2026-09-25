@@ -1,9 +1,9 @@
 import { createWorld } from './ecs/World';
-import { attachEventListeners } from './game';
 import { createCanvasInput } from './input/CanvasInput/CanvasInput';
-import { getInMemoryMessageBus } from './message-bus/Types/Handler';
+import { getInMemoryMessageBus } from './message-bus/Types/Bus';
 import './style.css'
-import { createMessageProcessSystem } from './systems/MessageProcessSystem/MessageProcessSystem';
+import { createInputSystem } from './systems/InputSystem/InputSystem';
+import { createPointerSystem } from './systems/PointerSystem/PointerSystem';
 import { createRenderSystem } from './systems/RenderSystem/RenderSystem';
 
 
@@ -43,7 +43,6 @@ createCanvasInput(canvas, bus);
 // ----- WORLD INIT -----
 const world = createWorld(bus);
 world.attachBus(bus);
-attachEventListeners(bus, world)
 
 // prvi sistem za okidanje MessageBuss.Publish Schedulovanih eventova
 // updateujemo poziciju nevidljivog Cursora
@@ -51,8 +50,9 @@ attachEventListeners(bus, world)
 
 // prvo treba da bude createMessagingSystem koji ce da uzme sve pending poruke i da ih publishuje
 // iznad za svaki taj event dodaj handler - to mogu da budu funkcije iz nekog sistema koji ce defakto biti pozvan iz messaging sistema 
-world.addSystem(createMessageProcessSystem());
-//world.addSystem(createInputSystem());
+//world.addSystem(createMessageProcessSystem());
+world.addSystem(createInputSystem(bus, world));
+world.addSystem(createPointerSystem());
 world.addSystem(createRenderSystem(ctx));
 
 // ----- GAME LOOP -----

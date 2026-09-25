@@ -1,5 +1,5 @@
-import type { ISystem } from "../../ecs/interfaces/System.Interface";
+import type { System } from "../../ecs/interfaces/System.Interface";
 
-export interface IRenderSystem extends ISystem {
+export interface IRenderSystem extends System {
 
 }

@@ -9,15 +9,15 @@ export interface MessageScheduler<CommandOrEvent extends Command | Event> {
 		when?: ScheduleOptions,
 	): void;
 
-	scheduleEvent(
-		message: Event,
-		when?: ScheduleOptions
-	): void;
+	// scheduleEvent(
+	// 	message: Event,
+	// 	when?: ScheduleOptions
+	// ): void;
 
-	scheduleCommand(
-		message: Command,
-		when?: ScheduleOptions
-	): void;
+	// scheduleCommand(
+	// 	message: Command,
+	// 	when?: ScheduleOptions
+	// ): void;
 }
 
 export type ScheduledMessage = {
@@ -38,8 +38,8 @@ export type ScheduledCommandMessage = {
 export interface ScheduledMessageProcessor {
 	dequeue(): ScheduledMessage[];
 	getPendingMessages(): ScheduledMessage[];
-	getPendingEventMessages(): ScheduledEventMessage[];
-	getPendingCommandMessages(): ScheduledCommandMessage[];
-	deletePendingEventMessages(): void;
-	deletePendingCommandMessages(): void;
+	// getPendingEventMessages(): ScheduledEventMessage[];
+	// getPendingCommandMessages(): ScheduledCommandMessage[];
+	// deletePendingEventMessages(): void;
+	// deletePendingCommandMessages(): void;
 }

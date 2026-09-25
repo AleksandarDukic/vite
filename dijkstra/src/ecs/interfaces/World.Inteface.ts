@@ -1,17 +1,18 @@
 import type { ComponentType } from "../../components/ComponentTypes";
-import type { MessagingService } from "../../message-bus/Types/Handler";
-import type { IComponent } from "./Component.Inteface";
-import type { ISystem } from "./System.Interface";
+import type { MessagingService } from "../../message-bus/Types/Bus";
+import type { Component } from "./Component.Inteface";
+import type { System } from "./System.Interface";
 
 export interface IWorld {
+    logComponents(): void;
     createEntity(): number;
     destroyEntity(entity: number): void;
     getEntities(): Set<number>;
-    addComponent(entity: number, componentType: ComponentType, component: IComponent) : void;
-    removeComponent(entity: number, component: IComponent) : void;
-    getComponent(entity: number, component: IComponent) : IComponent;
-    hasComponent(entity: number, component: IComponent) : boolean;
-    addSystem(system: ISystem) : void;
+    addComponent(entity: number, componentType: ComponentType, component: Component) : void;
+    removeComponent(entity: number, component: Component) : void;
+    getComponent(entity: number, component: Component) : Component;
+    hasComponent(entity: number, component: Component) : boolean;
+    addSystem(system: System) : void;
     update(deltaTime: number) : void;
     attachBus(bus: MessagingService): void;
     getBus(): MessagingService

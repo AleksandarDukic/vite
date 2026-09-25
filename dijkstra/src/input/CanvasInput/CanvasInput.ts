@@ -9,6 +9,7 @@ import type { CursorMoveEvent } from "../Events/CursorMoveEvent";
 import type { MessageBus } from "../../message-bus/Types/Bus";
 import type { ScheduledMessageProcessor } from "../../message-bus/Types/Scheduler";
 import type { MessageProcessor } from "../../message-bus/Types/Handler";
+import type { InputButtons } from "../../models/InputButtons";
 
 export function createCanvasInput(canvas: HTMLCanvasElement, messageBus: MessageBus & (MessageProcessor & ScheduledMessageProcessor)): void {
     canvas.addEventListener("contextmenu", (e: MouseEvent) => {
@@ -20,25 +21,29 @@ export function createCanvasInput(canvas: HTMLCanvasElement, messageBus: Message
         let event: CursorEnterEvent = {
             type: InputEventType.CursorEnter,
             data: position
-        }
-        messageBus.scheduleEvent(event);
+        };
+        messageBus.publish(event);
     })
     canvas.addEventListener("mouseleave", (e: MouseEvent) => {
         let position = getPosition(e);
         let event: CursorLeaveEvent = {
             type: InputEventType.CursorLeave,
             data: position
-        }
-        messageBus.scheduleEvent(event);
+        };
+        messageBus.publish(event);
 
     })
     canvas.addEventListener("mousedown", (e: MouseEvent) => {
         let position = getPosition(e);
+        let inputButtons: InputButtons = {
+            leftClick: e.button == 0,
+            rightClick: e.button == 2
+        };
         let event: CursorPressEvent = {
             type: InputEventType.CursorPress,
-            data: position
-        }
-        messageBus.scheduleEvent(event);
+            data: { x: position.x, y: position.y, leftClick: inputButtons.leftClick, rightClick: inputButtons.rightClick }
+        };
+        messageBus.publish(event);
 
     })
 
@@ -47,8 +52,8 @@ export function createCanvasInput(canvas: HTMLCanvasElement, messageBus: Message
         let event: CursorReleaseEvent = {
             type: InputEventType.CursorRelease,
             data: position
-        }
-        messageBus.scheduleEvent(event);
+        };
+        messageBus.publish(event);
 
     })
 
@@ -57,8 +62,8 @@ export function createCanvasInput(canvas: HTMLCanvasElement, messageBus: Message
         let event: CursorMoveEvent = {
             type: InputEventType.CursorMove,
             data: position
-        }
-        messageBus.scheduleEvent(event);
+        };
+        messageBus.publish(event);
     })
 }
 

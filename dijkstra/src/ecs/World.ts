@@ -1,7 +1,7 @@
 import type { ComponentType } from "../components/ComponentTypes";
-import type { MessagingService } from "../message-bus/Types/Handler";
-import type { IComponent } from "./interfaces/Component.Inteface"
-import type { ISystem } from "./interfaces/System.Interface"
+import type { MessagingService } from "../message-bus/Types/Bus";
+import type { Component } from "./interfaces/Component.Inteface"
+import type { System } from "./interfaces/System.Interface"
 import type { IWorld } from "./interfaces/World.Inteface"
 
 export function createWorld(messageBus: MessagingService): IWorld {
@@ -9,10 +9,10 @@ export function createWorld(messageBus: MessagingService): IWorld {
     let bus: MessagingService = messageBus;
     const entities = new Set<number>();
     const components = new Map();
-    const systems: ISystem[] = [];
+    const systems: System[] = [];
 
     const world: IWorld = {
-
+        logComponents() { console.log(components)},
         createEntity: function (): number {
             const id = nextEntityId++;
             entities.add(id);
@@ -29,7 +29,7 @@ export function createWorld(messageBus: MessagingService): IWorld {
             return entities;
         },
 
-        addComponent: function (entity: number, componentType: ComponentType, component: IComponent): void {
+        addComponent: function (entity: number, componentType: ComponentType, component: Component): void {
             const type = componentType;
             if (!components.has(type)) {
                 components.set(type, new Map());
@@ -43,14 +43,14 @@ export function createWorld(messageBus: MessagingService): IWorld {
                 componentMap.delete(entity);
             }
         },
-        getComponent: function (entity: number, componentType: ComponentType): IComponent {
+        getComponent: function (entity: number, componentType: ComponentType): Component {
             const componentMap = components.get(componentType);
             return componentMap ? componentMap.get(entity) : undefined;
         },
-        hasComponent: function (entity: number, component: IComponent): boolean {
+        hasComponent: function (entity: number, component: Component): boolean {
             throw new Error("Function not implemented.")
         },
-        addSystem: function (system: ISystem): void {
+        addSystem: function (system: System): void {
             systems.push(system);
         },
         update: function (deltaTime: number): void {

@@ -1,7 +1,7 @@
-import type { PointerEnterEvent } from "./CursorEnterEvent";
-import type { PointerLeaveEvent } from "./CursorLeaveEvent";
-import type { PointerMoveEvent } from "./CursorMoveEvent";
-import type { PointerPressEvent } from "./CursorPressEvent";
-import type { PointerReleaseEvent } from "./CursorReleaseEvent";
+import type { CursorEnterEvent } from "./CursorEnterEvent";
+import type { CursorLeaveEvent } from "./CursorLeaveEvent";
+import type { CursorMoveEvent } from "./CursorMoveEvent";
+import type { CursorPressEvent } from "./CursorPressEvent";
+import type { CursorReleaseEvent } from "./CursorReleaseEvent";
 
-export type InputEvent = PointerEnterEvent | PointerLeaveEvent | PointerMoveEvent | PointerPressEvent | PointerReleaseEvent
+export type InputEvent = CursorEnterEvent | CursorLeaveEvent | CursorMoveEvent | CursorPressEvent | CursorReleaseEvent
