@@ -1,4 +1,4 @@
-import { ComponentType } from "../../components/ComponentTypes";
+import { ComponentType } from "../../models/ComponentTypes";
 import type { InputComponent } from "../../components/Input/InputComponent.interface";
 import type { PointerActionComponent } from "../../components/PointerAction/PointerActionComponent.interface";
 import type { PositionComponent } from "../../components/Position/PositionComponent.interface";
@@ -12,11 +12,11 @@ export function createPointerSystem(): PointerSystem {
 
     const pointerSystem: PointerSystem = {
         update: function (world: IWorld, deltaTime: number) {
-            const pointerEnteties = entitiesWith(world, [ComponentType.Pointer, ComponentType.PointerAction, ComponentType.Position]);
             const inputEnteties = entitiesWith(world, [ComponentType.Input, ComponentType.Position]);
             if (inputEnteties.length < 1) return;
+            
+            const pointerEnteties = entitiesWith(world, [ComponentType.Pointer, ComponentType.PointerAction, ComponentType.Position]);
             const inputEntity = inputEnteties[0]
-
 
             pointerEnteties.forEach(entity => {
                 const inputComponent = world.getComponent(inputEntity, ComponentType.Input) as InputComponent;

@@ -1,14 +1,15 @@
-import { ComponentType } from "../../components/ComponentTypes";
-import type { GraphicComponent } from "../../components/Graphic/GraphicComponent.interface";
+import { ComponentType } from "../../models/ComponentTypes";
+
 import { GraphicType } from "../../components/Graphic/types/GraphicType";
-import type { PointerActionComponent } from "../../components/PointerAction/PointerActionComponent.interface";
 import type { PositionComponent } from "../../components/Position/PositionComponent.interface";
 import type { IWorld } from "../../ecs/interfaces/World.Inteface";
 import { entitiesWith } from "../../ecs/Query";
 import type { IRenderSystem } from "./RenderSystem.interface";
 import { drawPointer } from "./schemas/Pointer/Pointer";
+import { drawCell } from "./schemas/Cell/Cell";
+import type { GraphicComponent } from "../../components/Graphic/GraphicComponent.interface";
 
-export function createRenderSystem(ctx: CanvasRenderingContext2D): IRenderSystem {
+export function createRenderSystem(ctx: CanvasRenderingContext2D, graphicType: ComponentType, backCanvas?: HTMLCanvasElement, frontCanvasContext?: HTMLCanvasElement): IRenderSystem {
     let x = 200;
     let y = 100;
     let moveX = 5;
@@ -28,18 +29,31 @@ export function createRenderSystem(ctx: CanvasRenderingContext2D): IRenderSystem
 
     const renderSystem: IRenderSystem = {
         update: function (world: IWorld, deltaTime: number) {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-            drawBall();
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            if (backCanvas) {
+                
+                ctx.drawImage(backCanvas, 0, 0);
+                // const backCanvasCtx = backCanvas.getContext('2d');
+                // if (!backCanvasCtx) throw Error;
+                // backCanvasCtx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                // backCanvasCtx.fillStyle = 'red';
+            }
 
-            const entities = entitiesWith(world, [ComponentType.Graphic, ComponentType.Position]);
 
+            const entities = entitiesWith(world, [graphicType, ComponentType.Position]);
+            if (graphicType === ComponentType.BackGraphic) {
+                //debugger
+            }
             entities.forEach(entity => {
                 const positionComponent = world.getComponent(entity, ComponentType.Position) as PositionComponent;
-                const GraphicComponent = world.getComponent(entity, ComponentType.Graphic) as GraphicComponent
-
-                switch (GraphicComponent.type) {
+                const graphicComponent = world.getComponent(entity, graphicType) as GraphicComponent
+                switch (graphicComponent.type) {
                     case GraphicType.Pointer: {
                         drawPointer(ctx, positionComponent)
+                        break;
+                    }
+                    case GraphicType.Cell: {
+                        drawCell(ctx, positionComponent)
                         break;
                     }
                 }

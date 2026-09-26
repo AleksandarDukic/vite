@@ -1,4 +1,4 @@
-import type { ComponentType } from "../components/ComponentTypes";
+import type { ComponentType } from "../models/ComponentTypes";
 import type { IWorld } from "./interfaces/World.Inteface";
 
 export function entitiesWith(world: IWorld, componentClasses: ComponentType[]) {

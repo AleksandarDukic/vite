@@ -1,4 +1,4 @@
-import type { ComponentType } from "../../components/ComponentTypes";
+import type { ComponentType } from "../../models/ComponentTypes";
 import type { MessagingService } from "../../message-bus/Types/Bus";
 import type { Component } from "./Component.Inteface";
 import type { System } from "./System.Interface";
@@ -15,5 +15,6 @@ export interface IWorld {
     addSystem(system: System) : void;
     update(deltaTime: number) : void;
     attachBus(bus: MessagingService): void;
-    getBus(): MessagingService
+    getBus(): MessagingService;
+    createGrid(): void;
 }

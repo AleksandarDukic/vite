@@ -1,6 +1,7 @@
 import { createWorld } from './ecs/World';
 import { createCanvasInput } from './input/CanvasInput/CanvasInput';
 import { getInMemoryMessageBus } from './message-bus/Types/Bus';
+import { ComponentType } from './models/ComponentTypes';
 import './style.css'
 import { createInputSystem } from './systems/InputSystem/InputSystem';
 import { createPointerSystem } from './systems/PointerSystem/PointerSystem';
@@ -18,50 +19,46 @@ if (container) {
 const ctx = canvas.getContext("2d");
 if (!ctx) throw Error;
 
+const backCanvas = document.createElement("canvas");
+const backCanvasCtx = backCanvas.getContext("2d");
+if (!backCanvasCtx) throw Error;
+backCanvas.width = canvas.width;
+backCanvas.height = canvas.height;
+
+const frontCanvas = document.createElement("canvas");
+const frontCanvasCtx = backCanvas.getContext("2d");
+if (!frontCanvasCtx) throw Error;
+frontCanvas.width = canvas.width;
+frontCanvas.height = canvas.height;
+
 
 
 // ----- MESSAGE BUS -----
 const bus = getInMemoryMessageBus();
 
-//    Dodati za svaki canvas event funkciju koja ce da se poziva
-//    za svaki ce se updateovati pozicija i kvadrant u kome je
-//    za Press ce proveravati da li 
-      //   cuvamo poziciju Press-a
-      //   1) ako smo na vertexu i pozicija se pomeri zapocinjemo drag vertexa
-
-
-      // za Release 
-      //   1) dodajemo vertex - nema vertexa u definisanoj blizini    
-      //   2) dodajemo edge ako smo na vertexu
-      //   3) zatvarmo edge ako smo na drugom vertexu koji nije vec povezan
-      //   4) brisemo vertex ili edge ako je desni klik
-
-
 // ----- BROWSER EVENTS -----
 createCanvasInput(canvas, bus);
 
 // ----- WORLD INIT -----
-const world = createWorld(bus);
+const world = createWorld(bus, canvas.width, canvas.height);
 world.attachBus(bus);
 
-// prvi sistem za okidanje MessageBuss.Publish Schedulovanih eventova
-// updateujemo poziciju nevidljivog Cursora
-// proveravamo da li mozemo da dodamo/oduzmemo vertex/edge
-
-// prvo treba da bude createMessagingSystem koji ce da uzme sve pending poruke i da ih publishuje
-// iznad za svaki taj event dodaj handler - to mogu da budu funkcije iz nekog sistema koji ce defakto biti pozvan iz messaging sistema 
-//world.addSystem(createMessageProcessSystem());
 world.addSystem(createInputSystem(bus, world));
 world.addSystem(createPointerSystem());
-world.addSystem(createRenderSystem(ctx));
+world.addSystem(createRenderSystem(backCanvasCtx, ComponentType.BackGraphic));
+world.addSystem(createRenderSystem(ctx, ComponentType.Graphic, backCanvas, frontCanvas));
 
+
+
+//ctx!.drawImage(backCanvas, 0, 0);
 // ----- GAME LOOP -----
 let lastTime = performance.now();
 function gameLoop() {
   const now = performance.now();
   const deltaTime = (now - lastTime) / 1000;
   lastTime = now;
-  world.update(deltaTime)
+  
+  world.update(deltaTime);
   requestAnimationFrame(gameLoop);
 }
 

@@ -1,4 +1,4 @@
-import { ComponentType } from "../../components/ComponentTypes";
+import { ComponentType } from "../../models/ComponentTypes";
 import { createGraphicComponent } from "../../components/Graphic/GraphicComponent";
 import { GraphicType } from "../../components/Graphic/types/GraphicType";
 import { createInputComponent } from "../../components/Input/InputComponent";
@@ -9,12 +9,14 @@ import { createPositionComponent } from "../../components/Position/PositionCompo
 import type { PositionComponent } from "../../components/Position/PositionComponent.interface";
 import type { IWorld } from "../../ecs/interfaces/World.Inteface";
 import { entitiesWith } from "../../ecs/Query";
+import { createInput, removeInput } from "../../game/factories/InputFactory";
+import { createPointer, removePointer } from "../../game/factories/PointerFactory";
 import type { CursorEnterEvent } from "../../input/Events/CursorEnterEvent";
 import type { CursorLeaveEvent } from "../../input/Events/CursorLeaveEvent";
 import type { CursorMoveEvent } from "../../input/Events/CursorMoveEvent";
 import type { CursorPressEvent } from "../../input/Events/CursorPressEvent";
 import type { CursorReleaseEvent } from "../../input/Events/CursorReleaseEvent";
-import { InputEventType } from "../../input/Events/Types/InputEventTypes";
+import { InputEventType } from "../../models/InputEventTypes";
 import type { MessagingService } from "../../message-bus/Types/Bus";
 import type { Input } from "./Input.type";
 import type { InputSystem } from "./InputSystem.interface";
@@ -31,33 +33,23 @@ export function createInputSystem(bus: MessagingService, world: IWorld): InputSy
 
     function handleCursorEnter(e: CursorEnterEvent): void {
         // creating Input
-        let entity = world.createEntity();
-        world.addComponent(entity, ComponentType.Input, createInputComponent());
-        world.addComponent(entity, ComponentType.Position, createPositionComponent(e.data.x, e.data.y));
+        createInput(world, e);
 
         // creating Pointer
-        entity = world.createEntity();
-        world.addComponent(entity, ComponentType.Pointer, createPointerComponent());
-        world.addComponent(entity, ComponentType.PointerAction, createPointerActionComponent());
-        world.addComponent(entity, ComponentType.Position, createPositionComponent(e.data.x, e.data.y));
-        world.addComponent(entity, ComponentType.Graphic, createGraphicComponent(GraphicType.Pointer))
+        createPointer(world, e)
     }
 
     function handleCursorLeave(e: CursorLeaveEvent): void {
         // deleting Input
         let entities = entitiesWith(world, [ComponentType.Input, ComponentType.Position])
         entities.forEach(entity => {
-            world.removeComponent(entity, ComponentType.Input);
-            world.removeComponent(entity, ComponentType.Position);
+            removeInput(entity, world)
         });
 
         // deleting Pointer
         entities = entitiesWith(world, [ComponentType.Pointer, ComponentType.PointerAction, ComponentType.Position]);
         entities.forEach(entity => {
-            world.removeComponent(entity, ComponentType.Pointer);
-            world.removeComponent(entity, ComponentType.PointerAction);
-            world.removeComponent(entity, ComponentType.Position);
-
+            removePointer(entity, world);
         })
     }
 
@@ -107,3 +99,4 @@ export function createInputSystem(bus: MessagingService, world: IWorld): InputSy
 
     return inputSystem;
 }
+

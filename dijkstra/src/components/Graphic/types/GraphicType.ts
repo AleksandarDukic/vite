@@ -4,6 +4,7 @@ const GraphicType = {
     Pointer: 'Pointer',
     Vertex: 'Vertex',
     Edge: 'Edge',
+    Cell: 'Cell',
     TopLeftCell: 'TopLeftCell',
     TopCell: 'TopCell',
     TopRightCell: 'TopRightCell',

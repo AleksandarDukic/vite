@@ -1,6 +1,6 @@
 
 import type { Position } from "../../models/Position";
-import { InputEventType } from "../Events/Types/InputEventTypes";
+import { InputEventType } from "../../models/InputEventTypes";
 import type { CursorEnterEvent } from "../Events/CursorEnterEvent";
 import type { CursorLeaveEvent } from "../Events/CursorLeaveEvent";
 import type { CursorPressEvent } from "../Events/CursorPressEvent";
