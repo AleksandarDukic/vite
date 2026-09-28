@@ -1,3 +1,3 @@
-export interface IEntity {
+export interface Entity {
     id: number
 }

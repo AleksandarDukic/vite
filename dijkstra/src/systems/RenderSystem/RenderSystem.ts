@@ -8,14 +8,16 @@ import type { IRenderSystem } from "./RenderSystem.interface";
 import { drawPointer } from "./schemas/Pointer/Pointer";
 import { drawCell } from "./schemas/Cell/Cell";
 import type { GraphicComponent } from "../../components/Graphic/GraphicComponent.interface";
+import type { RenderSystemConfig } from "../../models/RenderSystemConfig";
 
-export function createRenderSystem(ctx: CanvasRenderingContext2D, graphicType: ComponentType, backCanvas?: HTMLCanvasElement, frontCanvasContext?: HTMLCanvasElement): IRenderSystem {
+export function createRenderSystem(config: RenderSystemConfig): IRenderSystem {
     let x = 200;
     let y = 100;
     let moveX = 5;
     let moveY = 5
 
     function drawBall() {
+        ctx.save();
         x += moveX;
         y += moveY;
         moveX = x >= ctx.canvas.width ? -1 * moveX : x <= 0 ? -1 * moveX : moveX;
@@ -23,41 +25,44 @@ export function createRenderSystem(ctx: CanvasRenderingContext2D, graphicType: C
         ctx.beginPath();
         ctx.arc(x, y, 25, 0, Math.PI * 2, true);
         ctx.closePath();
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = "red";
         ctx.fill();
+        ctx.restore();
     }
 
+    const {ctx, componentType, backgroundColor, globalAlpha, isFrontCanvas } = config
     const renderSystem: IRenderSystem = {
         update: function (world: IWorld, deltaTime: number) {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            if (backCanvas) {
-                
-                ctx.drawImage(backCanvas, 0, 0);
-                // const backCanvasCtx = backCanvas.getContext('2d');
-                // if (!backCanvasCtx) throw Error;
-                // backCanvasCtx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                // backCanvasCtx.fillStyle = 'red';
-            }
 
+            if (backgroundColor) {
+                ctx.save();
+                ctx.fillStyle = backgroundColor;
+                ctx.globalAlpha = globalAlpha ?? 1;
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.restore();
+            };
 
-            const entities = entitiesWith(world, [graphicType, ComponentType.Position]);
-            if (graphicType === ComponentType.BackGraphic) {
-                //debugger
-            }
+            const entities = entitiesWith(world, [componentType, ComponentType.Position]);
             entities.forEach(entity => {
                 const positionComponent = world.getComponent(entity, ComponentType.Position) as PositionComponent;
-                const graphicComponent = world.getComponent(entity, graphicType) as GraphicComponent
+                const graphicComponent = world.getComponent(entity, componentType) as GraphicComponent
                 switch (graphicComponent.type) {
                     case GraphicType.Pointer: {
                         drawPointer(ctx, positionComponent)
                         break;
                     }
                     case GraphicType.Cell: {
-                        drawCell(ctx, positionComponent)
+                        drawCell(ctx, positionComponent, world.getCellSize())
                         break;
                     }
                 }
             });
+
+            // TODO: ovo nije dobro mesto jer za back i main canvas proverava uvek
+            if (isFrontCanvas) {
+               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                //drawBall()
+            }
         }
     }
 

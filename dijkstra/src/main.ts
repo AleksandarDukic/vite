@@ -2,8 +2,10 @@ import { createWorld } from './ecs/World';
 import { createCanvasInput } from './input/CanvasInput/CanvasInput';
 import { getInMemoryMessageBus } from './message-bus/Types/Bus';
 import { ComponentType } from './models/ComponentTypes';
+import type { RenderSystemConfig } from './models/RenderSystemConfig';
 import './style.css'
 import { createInputSystem } from './systems/InputSystem/InputSystem';
+import { createOverlayRenderSystem } from './systems/OverlayRenderSystem/OverlayRenderSystem';
 import { createPointerSystem } from './systems/PointerSystem/PointerSystem';
 import { createRenderSystem } from './systems/RenderSystem/RenderSystem';
 
@@ -25,12 +27,35 @@ if (!backCanvasCtx) throw Error;
 backCanvas.width = canvas.width;
 backCanvas.height = canvas.height;
 
+
 const frontCanvas = document.createElement("canvas");
-const frontCanvasCtx = backCanvas.getContext("2d");
+const frontCanvasCtx = frontCanvas.getContext("2d");
 if (!frontCanvasCtx) throw Error;
 frontCanvas.width = canvas.width;
 frontCanvas.height = canvas.height;
+frontCanvasCtx.globalCompositeOperation = 'source-over';
 
+
+const mainRenderSystemConfig: RenderSystemConfig = {
+  ctx: ctx,
+  componentType: ComponentType.Graphic,
+  globalAlpha: 1,
+}
+
+const backRenderSystemConfig: RenderSystemConfig = {
+  ctx: backCanvasCtx,
+  componentType: ComponentType.BackGraphic,
+  globalAlpha: 1,
+  backgroundColor: '#CDC4AF'
+}
+
+const frontRenderSystemConfig: RenderSystemConfig = {
+  ctx: frontCanvasCtx,
+  componentType: ComponentType.FrontGraphic,
+  globalAlpha: 0,
+  isFrontCanvas: true,
+  backgroundColor: 'blue'
+}
 
 
 // ----- MESSAGE BUS -----
@@ -45,19 +70,19 @@ world.attachBus(bus);
 
 world.addSystem(createInputSystem(bus, world));
 world.addSystem(createPointerSystem());
-world.addSystem(createRenderSystem(backCanvasCtx, ComponentType.BackGraphic));
-world.addSystem(createRenderSystem(ctx, ComponentType.Graphic, backCanvas, frontCanvas));
+world.addSystem(createRenderSystem(backRenderSystemConfig));
+world.addSystem(createOverlayRenderSystem(ctx, backCanvas));
+world.addSystem(createRenderSystem(frontRenderSystemConfig));
+world.addSystem(createRenderSystem(mainRenderSystemConfig));
+world.addSystem(createOverlayRenderSystem(ctx, frontCanvas));
 
-
-
-//ctx!.drawImage(backCanvas, 0, 0);
 // ----- GAME LOOP -----
 let lastTime = performance.now();
 function gameLoop() {
   const now = performance.now();
   const deltaTime = (now - lastTime) / 1000;
   lastTime = now;
-  
+
   world.update(deltaTime);
   requestAnimationFrame(gameLoop);
 }

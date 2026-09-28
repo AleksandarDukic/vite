@@ -2,8 +2,11 @@ import type { PositionComponent } from "../../../../components/Position/Position
 
 export function drawPointer(ctx: CanvasRenderingContext2D, postion: PositionComponent, effect?: undefined) {
     ctx.beginPath();
-    ctx.arc(postion.x, postion.y, 25, 0, Math.PI * 2, true);
+    ctx.arc(postion.x, postion.y, 15, 0, Math.PI * 2, true);
+    ctx.stroke();
     ctx.closePath();
-    ctx.fillStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(postion.x, postion.y, 3, 0, Math.PI * 2, true)
     ctx.fill();
+    
 }

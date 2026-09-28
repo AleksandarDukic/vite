@@ -13,13 +13,18 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
     const components = new Map();
     const systems: System[] = [];
     // GRID
-    let cellSize = 40;
+    let cellSize =40;
     canvasWidth;
     canvasHeight;
+
+    // !@# ne znam sta ce mi grid!!! cell vec ima normalizovanu poziciju
     const grid = new Map();
 
     
     const world: IWorld = {
+        getCellSize: function() {
+            return cellSize;
+        },
         createEntity: function (): number {
             const id = nextEntityId++;
             entities.add(id);
@@ -52,7 +57,7 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
             return componentMap ? componentMap.get(entity) : undefined;
         },
         hasComponent: function (entity: number, component: Component): boolean {
-            throw new Error("Function not implemented.")
+            throw new Error("Function not implemented.");
         },
         addSystem: function (system: System): void {
             systems.push(system);
@@ -69,21 +74,26 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
             return bus;
         },
         createGrid() {
-            for(let i = 0; i < canvasWidth; i += cellSize) {
+            for (let i = 0; i < canvasWidth; i += cellSize) {
                 grid.set(i, new Map());
-                for(let j = 0; j < canvasHeight; j += cellSize) {
+                for (let j = 0; j < canvasHeight; j += cellSize) {
                     let entity = this.createEntity();
                     // mozda ne treba da guram entite u cell
                     grid.get(i).set(j, [entity]);
-                    createCell(entity, this, {x: i, y: j} as Position, ComponentType.BackGraphic)
-
+                    createCell(entity, this, { x: i, y: j } as Position, ComponentType.BackGraphic);
                 }
             }
+        },
+        logComponents: function (): void {
+            console.log(components);
+            console.log(grid);
+        },
+        getCellEntity: function (x: number, y: number): number {
+            return grid.get(x).get(y)[0];
         }
-
     }
 
     world.createGrid();
-    console.log(components)
+    
     return world;
 }

@@ -6,6 +6,7 @@ const ComponentType = {
     FrontGraphic: 'FrontGraphic',
     Pointer: 'Pointer',
     PointerAction: 'PointerAction',
+    CellPosition: 'CellPosition'
 
 } as const;
 

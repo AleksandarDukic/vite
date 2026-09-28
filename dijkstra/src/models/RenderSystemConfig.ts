@@ -2,8 +2,8 @@ import type { ComponentType } from "./ComponentTypes";
 
 export interface RenderSystemConfig {
     ctx: CanvasRenderingContext2D,
-    graphicType: ComponentType,
+    componentType: ComponentType,
     backgroundColor?: string,
-    backCanvas?: HTMLCanvasElement,
-    frontCanvasContext?: HTMLCanvasElement
+    globalAlpha?: number,
+    isFrontCanvas?: boolean;
 }

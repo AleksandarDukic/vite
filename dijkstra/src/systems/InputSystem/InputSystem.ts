@@ -1,11 +1,5 @@
 import { ComponentType } from "../../models/ComponentTypes";
-import { createGraphicComponent } from "../../components/Graphic/GraphicComponent";
-import { GraphicType } from "../../components/Graphic/types/GraphicType";
-import { createInputComponent } from "../../components/Input/InputComponent";
 import type { InputComponent } from "../../components/Input/InputComponent.interface";
-import { createPointerComponent } from "../../components/Pointer/PointerComponent";
-import { createPointerActionComponent } from "../../components/PointerAction/PointerActionComponent";
-import { createPositionComponent } from "../../components/Position/PositionComponent";
 import type { PositionComponent } from "../../components/Position/PositionComponent.interface";
 import type { IWorld } from "../../ecs/interfaces/World.Inteface";
 import { entitiesWith } from "../../ecs/Query";

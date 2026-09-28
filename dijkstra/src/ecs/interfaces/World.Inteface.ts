@@ -5,6 +5,7 @@ import type { System } from "./System.Interface";
 
 export interface IWorld {
     logComponents(): void;
+    getCellSize(): number;
     createEntity(): number;
     destroyEntity(entity: number): void;
     getEntities(): Set<number>;
@@ -17,4 +18,5 @@ export interface IWorld {
     attachBus(bus: MessagingService): void;
     getBus(): MessagingService;
     createGrid(): void;
+    getCellEntity(x: number, y: number): number;
 }
