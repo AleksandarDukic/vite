@@ -1,5 +1,5 @@
-import type { IWorld } from "./World.Inteface";
+import type { World } from "./World.Inteface";
 
 export interface System {
-    update(world: IWorld, deltaTime: number): void;
+    update(world: World, deltaTime: number): void;
 }

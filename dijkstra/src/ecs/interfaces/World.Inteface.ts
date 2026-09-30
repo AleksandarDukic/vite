@@ -2,8 +2,9 @@ import type { ComponentType } from "../../models/ComponentTypes";
 import type { MessagingService } from "../../message-bus/Types/Bus";
 import type { Component } from "./Component.Inteface";
 import type { System } from "./System.Interface";
+import type { Position } from "../../models/Position";
 
-export interface IWorld {
+export interface World {
     logComponents(): void;
     getCellSize(): number;
     createEntity(): number;
@@ -18,5 +19,7 @@ export interface IWorld {
     attachBus(bus: MessagingService): void;
     getBus(): MessagingService;
     createGrid(): void;
+    addEntityToGrid(entity: number, position: Position): void;
+    removeEntityFromGrid(entity: number, position: Position): void;
     getCellEntity(x: number, y: number): number;
 }

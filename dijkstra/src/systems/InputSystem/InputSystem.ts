@@ -1,7 +1,7 @@
 import { ComponentType } from "../../models/ComponentTypes";
 import type { InputComponent } from "../../components/Input/InputComponent.interface";
 import type { PositionComponent } from "../../components/Position/PositionComponent.interface";
-import type { IWorld } from "../../ecs/interfaces/World.Inteface";
+import type { World } from "../../ecs/interfaces/World.Inteface";
 import { entitiesWith } from "../../ecs/Query";
 import { createInput, removeInput } from "../../game/factories/InputFactory";
 import { createPointer, removePointer } from "../../game/factories/PointerFactory";
@@ -17,7 +17,7 @@ import type { InputSystem } from "./InputSystem.interface";
 
 //function 
 
-export function createInputSystem(bus: MessagingService, world: IWorld): InputSystem {
+export function createInputSystem(bus: MessagingService, world: World): InputSystem {
 
     const input: Input = {
         position: { x: 0, y: 0 },
@@ -72,7 +72,7 @@ export function createInputSystem(bus: MessagingService, world: IWorld): InputSy
     bus.subscribe(handleCursorRelease, InputEventType.CursorRelease);
 
     const inputSystem: InputSystem = {
-        update: function (world: IWorld, deltaTime: number) {
+        update: function (world: World, deltaTime: number) {
             const entities = entitiesWith(world, [ComponentType.Input, ComponentType.Position]);
 
             entities.forEach(entity => {

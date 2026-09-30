@@ -1,9 +1,12 @@
 import { createWorld } from './ecs/World';
+import { createFps } from './game/factories/FpsFactory';
+import { createMainCanvasIndicator } from './game/factories/MainCanvasIndicatorFactory';
 import { createCanvasInput } from './input/CanvasInput/CanvasInput';
 import { getInMemoryMessageBus } from './message-bus/Types/Bus';
 import { ComponentType } from './models/ComponentTypes';
 import type { RenderSystemConfig } from './models/RenderSystemConfig';
 import './style.css'
+import { createFpsSystem } from './systems/FpsSystem/FpsSystem';
 import { createInputSystem } from './systems/InputSystem/InputSystem';
 import { createOverlayRenderSystem } from './systems/OverlayRenderSystem/OverlayRenderSystem';
 import { createPointerSystem } from './systems/PointerSystem/PointerSystem';
@@ -12,12 +15,11 @@ import { createRenderSystem } from './systems/RenderSystem/RenderSystem';
 
 // ----- CANVAS INIT -----
 const container = document.getElementById("dijkstra");
+if (!container) throw Error;
 const canvas = document.createElement("canvas");
-if (container) {
-  canvas.width = container.clientWidth;
-  canvas.height = container.clientHeight;
-  container.appendChild(canvas);
-}
+canvas.width = container.clientWidth;
+canvas.height = container.clientHeight;
+container.appendChild(canvas);
 const ctx = canvas.getContext("2d");
 if (!ctx) throw Error;
 
@@ -26,7 +28,6 @@ const backCanvasCtx = backCanvas.getContext("2d");
 if (!backCanvasCtx) throw Error;
 backCanvas.width = canvas.width;
 backCanvas.height = canvas.height;
-
 
 const frontCanvas = document.createElement("canvas");
 const frontCanvasCtx = frontCanvas.getContext("2d");
@@ -39,6 +40,7 @@ frontCanvasCtx.globalCompositeOperation = 'source-over';
 const mainRenderSystemConfig: RenderSystemConfig = {
   ctx: ctx,
   componentType: ComponentType.Graphic,
+  backgroundColor: 'transparent',
   globalAlpha: 1,
 }
 
@@ -67,6 +69,8 @@ createCanvasInput(canvas, bus);
 // ----- WORLD INIT -----
 const world = createWorld(bus, canvas.width, canvas.height);
 world.attachBus(bus);
+createFps(world);
+createMainCanvasIndicator(world);
 
 world.addSystem(createInputSystem(bus, world));
 world.addSystem(createPointerSystem());
@@ -75,6 +79,7 @@ world.addSystem(createOverlayRenderSystem(ctx, backCanvas));
 world.addSystem(createRenderSystem(frontRenderSystemConfig));
 world.addSystem(createRenderSystem(mainRenderSystemConfig));
 world.addSystem(createOverlayRenderSystem(ctx, frontCanvas));
+world.addSystem(createFpsSystem());
 
 // ----- GAME LOOP -----
 let lastTime = performance.now();

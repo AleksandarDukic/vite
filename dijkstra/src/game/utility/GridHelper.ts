@@ -1,7 +1,7 @@
-import type { IWorld } from "../../ecs/interfaces/World.Inteface";
+import type { World } from "../../ecs/interfaces/World.Inteface";
 import type { Position } from "../../models/Position";
 
-export function getCellEntityFromPosition(postion: Position, world: IWorld): number {
+export function getCellEntityFromPosition(postion: Position, world: World): number {
     let cellSize = world.getCellSize();
     let cellX = postion.x - postion.x % cellSize;
     let cellY = postion.y - postion.y % cellSize;
@@ -14,11 +14,10 @@ export function getNeighbourCellEntitiesFromCell(entity: number) {
 
 }
 
-export function getCellPositionFromPosition(cellSize: number, position: Position): Position {
+export function getCellSizeRoundPositionFromPosition(cellSize: number, position: Position): Position {
 
-    let cellX = position.x - position.x % cellSize;
-    let cellY = position.y - position.y % cellSize;
-    console.log(cellX, cellY)
+    let cellX = roundByCellSize(position.x, cellSize);
+    let cellY = roundByCellSize(position.y, cellSize);
 
     return { x: cellX, y: cellY };
 }

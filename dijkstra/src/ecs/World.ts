@@ -2,11 +2,12 @@ import { ComponentType } from "../models/ComponentTypes";
 import type { MessagingService } from "../message-bus/Types/Bus";
 import type { Component } from "./interfaces/Component.Inteface"
 import type { System } from "./interfaces/System.Interface"
-import type { IWorld } from "./interfaces/World.Inteface"
+import type { World } from "./interfaces/World.Inteface"
 import { createCell } from "../game/factories/CellFactory";
 import type { Position } from "../models/Position";
+import type { GridCell } from "../models/GridCell";
 
-export function createWorld(messageBus: MessagingService, canvasWidth: number, canvasHeight: number): IWorld {
+export function createWorld(messageBus: MessagingService, canvasWidth: number, canvasHeight: number): World {
     let nextEntityId = 0;
     let bus: MessagingService = messageBus;
     const entities = new Set<number>();
@@ -17,11 +18,9 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
     canvasWidth;
     canvasHeight;
 
-    // !@# ne znam sta ce mi grid!!! cell vec ima normalizovanu poziciju
     const grid = new Map();
 
-    
-    const world: IWorld = {
+    const world: World = {
         getCellSize: function() {
             return cellSize;
         },
@@ -79,10 +78,23 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
                 for (let j = 0; j < canvasHeight; j += cellSize) {
                     let entity = this.createEntity();
                     // mozda ne treba da guram entite u cell
-                    grid.get(i).set(j, [entity]);
+                    const gridCell: GridCell = {
+                        host: entity,
+                        tennants: []
+                    }
+                    grid.get(i).set(j, gridCell);
                     createCell(entity, this, { x: i, y: j } as Position, ComponentType.BackGraphic);
                 }
             }
+        },
+        addEntityToGrid(entity: number, position: Position) {
+            grid.get(position.x).get(position.y).tennants.push(entity);
+        },
+        removeEntityFromGrid(entity: number, position: Position) {
+            const tennats = grid.get(position.x).get(position.y).tennants as number[];
+            const filteredTennats = tennats.filter(x => x != entity);
+            grid.get(position.x).get(position.y).tennants = filteredTennats;
+
         },
         logComponents: function (): void {
             console.log(components);

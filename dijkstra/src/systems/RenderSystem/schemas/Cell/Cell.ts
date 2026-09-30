@@ -1,6 +1,7 @@
+import type { Effect } from "../../../../components/Graphic/types/Effect";
 import type { PositionComponent } from "../../../../components/Position/PositionComponent.interface";
 
-export function drawCell(ctx: CanvasRenderingContext2D, postion: PositionComponent, cellSize: number, effect?: undefined) {
+export function drawCell(ctx: CanvasRenderingContext2D, postion: PositionComponent, cellSize: number, effects?: Effect[]) {
     ctx.setLineDash([1, 7]);
     ctx.save();
     ctx.lineWidth = 1;

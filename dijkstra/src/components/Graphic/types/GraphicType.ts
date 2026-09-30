@@ -1,8 +1,7 @@
-//export type GraphicType = 'Pointer' | 'Vertex' | 'Edge' | 'TopLeftCell' | 'TopCell' | 'TopRightCell' | 'LeftCell' | 'BottomLeftCell' | 'BottomCell' | 'BottomRightCell' | 'RightCell';
-
 const GraphicType = {
     Pointer: 'Pointer',
     Vertex: 'Vertex',
+    Fps: 'Fps',
     Edge: 'Edge',
     Cell: 'Cell',
     TopLeftCell: 'TopLeftCell',
