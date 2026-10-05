@@ -4,6 +4,6 @@ import type { GraphicType } from "./types/GraphicType";
 
 export interface GraphicComponent extends Component {
         type: GraphicType,
-        effects?: Effect[]
-        color?: string
+        effects: Effect[],
+        color?: string,
 }

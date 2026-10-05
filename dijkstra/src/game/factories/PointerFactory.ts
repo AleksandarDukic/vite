@@ -1,53 +1,36 @@
 import { ComponentType } from "../../models/ComponentTypes";
-import { createGraphicComponent } from "../../components/Graphic/GraphicComponent";
 import { GraphicType } from "../../components/Graphic/types/GraphicType";
-import { createPointerComponent } from "../../components/Pointer/PointerComponent";
-import { createPointerActionComponent } from "../../components/PointerAction/PointerActionComponent";
-import { createPositionComponent } from "../../components/Position/PositionComponent";
 import type { World } from "../../ecs/interfaces/World.Inteface";
 import type { CursorEnterEvent } from "../../input/Events/CursorEnterEvent";
-import { getCellSizeRoundPositionFromPosition } from "../utility/GridHelper";
+import { getCellPosition } from "../utility/GridHelper";
 import type { Position } from "../../models/Position";
-import { entitiesWith } from "../../ecs/Query";
-import type { Effect } from "../../components/Graphic/types/Effect";
-import { EffectRenderingOrder } from "../../components/Graphic/types/EffectRenderingOrder";
-import { EffectType } from "../../components/Graphic/types/EffectType";
+import { componentFactory as cFactory} from "../../components/componentFactory" ;
+import { effectFactory as eFactory } from "../../components/Graphic/effectFactory-1";
 
 export function createPointer(world: World, e: CursorEnterEvent) {
 
     let pointerEntity = world.createEntity();
-    world.addComponent(pointerEntity, ComponentType.Pointer, createPointerComponent());
-    world.addComponent(pointerEntity, ComponentType.PointerAction, createPointerActionComponent());
-    world.addComponent(pointerEntity, ComponentType.Position, createPositionComponent(e.data.x, e.data.y));
+    world.addComponent(pointerEntity, ...cFactory.createPointerComponent());
+    world.addComponent(pointerEntity, ...cFactory.createPointerActionComponent());
+    world.addComponent(pointerEntity, ...cFactory.createPositionComponent(e.data.x, e.data.y));
     
-    const cellPosition: Position = getCellSizeRoundPositionFromPosition(world.getCellSize(), e.data);
-    world.addComponent(pointerEntity, ComponentType.CellPosition, createPositionComponent(cellPosition.x, cellPosition.y));
-    world.addEntityToGrid(pointerEntity, cellPosition);
+    const cellPosition: Position = getCellPosition(world.getCellSize(), e.data);
+    world.addComponent(pointerEntity, ...cFactory.createPositionComponent(cellPosition.x, cellPosition.y, ComponentType.CellPosition));
+
+    world.addTennantToGrid(pointerEntity, cellPosition);
 
     // graphic Component
-    const effects: Effect[] = [];
-    const pulseEffect: Effect = {
-        order: EffectRenderingOrder.Before,
-        type: EffectType.Pulse,
-        duration: 5
-    }
+    let pulse = eFactory().animated(4).before().pulse().repeating().build();
+    let glow = eFactory().static().after().glow().once().build();
 
-    const glowEffect: Effect = {
-        order: EffectRenderingOrder.After,
-        type: EffectType.Glow
-    }
-    effects.push(pulseEffect, glowEffect);
-    world.addComponent(pointerEntity, ComponentType.Graphic, createGraphicComponent(GraphicType.Pointer, effects));
-
-
+    world.addComponent(pointerEntity, ...cFactory.createGraphicComponent(GraphicType.Pointer, [pulse, glow]));
 }
 
 export function removePointer(pointerEntity: number, world: World) {
-    const pointerEnteties = entitiesWith(world, [ComponentType.Pointer, ComponentType.PointerAction, ComponentType.Position, ComponentType.CellPosition]);
     
-    const pointerCellPosition = world.getComponent(pointerEnteties[0], ComponentType.CellPosition) as Position;
+    const pointerCellPosition = world.getComponent(pointerEntity, ComponentType.CellPosition) as Position;
     world.removeEntityFromGrid(pointerEntity, pointerCellPosition);
-    
+
     world.removeComponent(pointerEntity, ComponentType.Pointer);
     world.removeComponent(pointerEntity, ComponentType.PointerAction);
     world.removeComponent(pointerEntity, ComponentType.Position);

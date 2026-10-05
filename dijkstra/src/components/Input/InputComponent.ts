@@ -1,9 +1,9 @@
-import type { InputComponent } from "./InputComponent.interface";
+import { ComponentType } from "../../models/ComponentTypes";
 
-export function createInputComponent() : InputComponent {
-    return {
+export function createInputComponent() {
+    const component = {
         leftClick: false,
         rightClick: false
     };
-
+    return [ComponentType.Input, component] as const
 }

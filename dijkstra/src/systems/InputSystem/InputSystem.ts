@@ -41,9 +41,9 @@ export function createInputSystem(bus: MessagingService, world: World): InputSys
         });
 
         // deleting Pointer
-        entities = entitiesWith(world, [ComponentType.Pointer, ComponentType.PointerAction, ComponentType.Position]);
-        entities.forEach(entity => {
-            removePointer(entity, world);
+        const pointerEntities = entitiesWith(world, [ComponentType.Pointer, ComponentType.PointerAction, ComponentType.Position]);
+        pointerEntities.forEach(pointerEntity => {
+            removePointer(pointerEntity, world);
         })
     }
 

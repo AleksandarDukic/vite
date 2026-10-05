@@ -1,6 +1,7 @@
+import type { Effect } from "../../../../../components/Graphic/types/Effect";
 import type { PositionComponent } from "../../../../../components/Position/PositionComponent.interface";
 
-export function drawGlow(ctx: CanvasRenderingContext2D, postion: PositionComponent) {
+export function drawGlow(ctx: CanvasRenderingContext2D, postion: PositionComponent, effect: Effect) {
     ctx.save();
     ctx.beginPath();
     ctx.arc(postion.x, postion.y, 15, 0, Math.PI * 2, true);

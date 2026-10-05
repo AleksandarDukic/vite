@@ -8,7 +8,7 @@ import type { RenderSystemConfig } from './models/RenderSystemConfig';
 import './style.css'
 import { createFpsSystem } from './systems/FpsSystem/FpsSystem';
 import { createInputSystem } from './systems/InputSystem/InputSystem';
-import { createOverlayRenderSystem } from './systems/OverlayRenderSystem/OverlayRenderSystem';
+import { createCanvasComposeSystem } from './systems/CanvasComposeSystem/CanvasComposeSystem';
 import { createPointerSystem } from './systems/PointerSystem/PointerSystem';
 import { createRenderSystem } from './systems/RenderSystem/RenderSystem';
 
@@ -74,12 +74,15 @@ createMainCanvasIndicator(world);
 
 world.addSystem(createInputSystem(bus, world));
 world.addSystem(createPointerSystem());
-world.addSystem(createRenderSystem(backRenderSystemConfig));
-world.addSystem(createOverlayRenderSystem(ctx, backCanvas));
-world.addSystem(createRenderSystem(frontRenderSystemConfig));
-world.addSystem(createRenderSystem(mainRenderSystemConfig));
-world.addSystem(createOverlayRenderSystem(ctx, frontCanvas));
 world.addSystem(createFpsSystem());
+
+world.addSystem(createRenderSystem(backRenderSystemConfig));
+world.addSystem(createCanvasComposeSystem(ctx, backCanvas));
+
+world.addSystem(createRenderSystem(mainRenderSystemConfig));
+
+world.addSystem(createRenderSystem(frontRenderSystemConfig));
+world.addSystem(createCanvasComposeSystem(ctx, frontCanvas));
 
 // ----- GAME LOOP -----
 let lastTime = performance.now();

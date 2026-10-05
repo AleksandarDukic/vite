@@ -1,15 +1,13 @@
 import { ComponentType } from "../../models/ComponentTypes";
-import { createInputComponent } from "../../components/Input/InputComponent";
-import { createPositionComponent } from "../../components/Position/PositionComponent";
 import type { World } from "../../ecs/interfaces/World.Inteface";
 import type { CursorEnterEvent } from "../../input/Events/CursorEnterEvent";
+import { componentFactory as cFactory } from "../../components/componentFactory";
 
 export function createInput(world: World, e: CursorEnterEvent) {
     let entity = world.createEntity();
-    world.addComponent(entity, ComponentType.Input, createInputComponent());
-    world.addComponent(entity, ComponentType.Position, createPositionComponent(e.data.x, e.data.y));
+    world.addComponent(entity, ...cFactory.createInputComponent());
+    world.addComponent(entity, ...cFactory.createPositionComponent(e.data.x, e.data.y));
 }
-
 
 export function removeInput(entity: number, world: World) {
     world.removeComponent(entity, ComponentType.Input);

@@ -3,7 +3,7 @@ import { GraphicType } from "../../components/Graphic/types/GraphicType";
 import type { PositionComponent } from "../../components/Position/PositionComponent.interface";
 import type { World } from "../../ecs/interfaces/World.Inteface";
 import { entitiesWith } from "../../ecs/Query";
-import type { IRenderSystem } from "./RenderSystem.interface";
+import type { RenderSystem } from "./RenderSystem.interface";
 import { drawPointer } from "./schemas/Pointer/Pointer";
 import { drawCell } from "./schemas/Cell/Cell";
 import type { GraphicComponent } from "../../components/Graphic/GraphicComponent.interface";
@@ -12,7 +12,7 @@ import { drawVertex } from "./schemas/Vertex/Vertex";
 import { drawFps } from "./schemas/Fps/Fps";
 import type { FpsComponent } from "../../components/FPS/FpsComponent.interface";
 
-export function createRenderSystem(config: RenderSystemConfig): IRenderSystem {
+export function createRenderSystem(config: RenderSystemConfig): RenderSystem {
 
     const ballConfig = {
         x: 200,
@@ -37,7 +37,7 @@ export function createRenderSystem(config: RenderSystemConfig): IRenderSystem {
 
     const { ctx, componentType, backgroundColor, globalAlpha, isFrontCanvas } = config
 
-    const renderSystem: IRenderSystem = {
+    const renderSystem: RenderSystem = {
         update: function (world: World, deltaTime: number) {
 
                         // TODO: ovo nije dobro mesto jer za back i main canvas proverava uvek
@@ -55,19 +55,21 @@ export function createRenderSystem(config: RenderSystemConfig): IRenderSystem {
 
             const entities = entitiesWith(world, [componentType, ComponentType.Position]);
             entities.forEach(entity => {
+
                 const positionComponent = world.getComponent(entity, ComponentType.Position) as PositionComponent;
-                const graphicComponent = world.getComponent(entity, componentType) as GraphicComponent
+                const graphicComponent = world.getComponent(entity, componentType) as GraphicComponent;
+
                 switch (graphicComponent.type) {
                     case GraphicType.Pointer: {
-                        drawPointer(ctx, positionComponent, graphicComponent.effects)
+                        drawPointer(ctx, positionComponent, graphicComponent)
                         break;
                     }
                     case GraphicType.Cell: {
-                        drawCell(ctx, positionComponent, world.getCellSize(), graphicComponent.effects)
+                        drawCell(ctx, positionComponent, world.getCellSize(), graphicComponent, entity)
                         break;
                     }
                     case GraphicType.Vertex: {
-                        drawVertex(ctx, positionComponent, graphicComponent.effects)
+                        drawVertex(ctx, positionComponent, graphicComponent)
                         break;
                     }
                     case GraphicType.Fps: {

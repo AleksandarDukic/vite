@@ -3,9 +3,10 @@ import type { MessagingService } from "../message-bus/Types/Bus";
 import type { Component } from "./interfaces/Component.Inteface"
 import type { System } from "./interfaces/System.Interface"
 import type { World } from "./interfaces/World.Inteface"
-import { createCell } from "../game/factories/CellFactory";
+import { createGridCell } from "../game/factories/GridCellFactory";
 import type { Position } from "../models/Position";
 import type { GridCell } from "../models/GridCell";
+import { gridFactory } from "../game/factories/GridFactory";
 
 export function createWorld(messageBus: MessagingService, canvasWidth: number, canvasHeight: number): World {
     let nextEntityId = 0;
@@ -14,15 +15,21 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
     const components = new Map();
     const systems: System[] = [];
     // GRID
-    let cellSize =40;
+    let cellSize = 40;
     canvasWidth;
     canvasHeight;
 
-    const grid = new Map();
+    let grid = new Map();
 
     const world: World = {
-        getCellSize: function() {
+        getCellSize: function () {
             return cellSize;
+        },
+        getCanvasWidth: function () {
+            return canvasWidth;
+        },
+        getCanvasHeight: function () {
+            return canvasHeight;
         },
         createEntity: function (): number {
             const id = nextEntityId++;
@@ -72,40 +79,26 @@ export function createWorld(messageBus: MessagingService, canvasWidth: number, c
         getBus(): MessagingService {
             return bus;
         },
-        createGrid() {
-            for (let i = 0; i < canvasWidth; i += cellSize) {
-                grid.set(i, new Map());
-                for (let j = 0; j < canvasHeight; j += cellSize) {
-                    let entity = this.createEntity();
-                    // mozda ne treba da guram entite u cell
-                    const gridCell: GridCell = {
-                        host: entity,
-                        tennants: []
-                    }
-                    grid.get(i).set(j, gridCell);
-                    createCell(entity, this, { x: i, y: j } as Position, ComponentType.BackGraphic);
-                }
-            }
-        },
-        addEntityToGrid(entity: number, position: Position) {
+
+        addTennantToGrid(entity: number, position: Position) {
             grid.get(position.x).get(position.y).tennants.push(entity);
         },
+
         removeEntityFromGrid(entity: number, position: Position) {
             const tennats = grid.get(position.x).get(position.y).tennants as number[];
             const filteredTennats = tennats.filter(x => x != entity);
             grid.get(position.x).get(position.y).tennants = filteredTennats;
-
         },
         logComponents: function (): void {
             console.log(components);
             console.log(grid);
         },
         getCellEntity: function (x: number, y: number): number {
-            return grid.get(x).get(y)[0];
+            return grid.get(x).get(y).host;
         }
     }
 
-    world.createGrid();
-    
+    grid = gridFactory().createGrid(world);
+
     return world;
 }

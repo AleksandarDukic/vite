@@ -1,16 +1,10 @@
-import { createFpsComponent } from "../../components/FPS/FpsComponent";
-import { createGraphicComponent } from "../../components/Graphic/GraphicComponent";
 import { GraphicType } from "../../components/Graphic/types/GraphicType";
-import { createPositionComponent } from "../../components/Position/PositionComponent";
 import type { World } from "../../ecs/interfaces/World.Inteface";
-import { ComponentType } from "../../models/ComponentTypes";
+import { componentFactory as cFactory } from "../../components/componentFactory";
 
 export function createFps(world: World) {
-
     let fpsEntity = world.createEntity();
-    world.addComponent(fpsEntity, ComponentType.Fps, createFpsComponent());
-    world.addComponent(fpsEntity, ComponentType.Position, createPositionComponent(5,10));
-    
-    world.addComponent(fpsEntity, ComponentType.FrontGraphic, createGraphicComponent(GraphicType.Fps))
-
+    world.addComponent(fpsEntity, ...cFactory.createFpsComponent());
+    world.addComponent(fpsEntity, ...cFactory.createPositionComponent(5,10));
+    world.addComponent(fpsEntity, ...cFactory.createFrontGraphicComponent(GraphicType.Fps))
 }

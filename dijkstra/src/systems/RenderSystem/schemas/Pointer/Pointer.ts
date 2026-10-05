@@ -1,19 +1,13 @@
-import type { Effect } from "../../../../components/Graphic/types/Effect";
+import { EffectRenderingOrder, EffectType, type Effect } from "../../../../components/Graphic/types/Effect";
 import type { PositionComponent } from "../../../../components/Position/PositionComponent.interface";
 import { drawPulse } from "./effects/Pulse";
-import { EffectRenderingOrder } from "../../../../components/Graphic/types/EffectRenderingOrder";
-import { EffectType } from "../../../../components/Graphic/types/EffectType";
 import { drawGlow } from "./effects/Glow";
+import type { GraphicComponent } from "../../../../components/Graphic/GraphicComponent.interface";
 
-export function drawPointer(ctx: CanvasRenderingContext2D, postion: PositionComponent, effects?: Effect[]) {
+export function drawPointer(ctx: CanvasRenderingContext2D, postion: PositionComponent, graphicComponent: GraphicComponent) {
 
-    effects?.filter(effect => effect.order === EffectRenderingOrder.Before).forEach(effect => {
-        switch (effect.type) {
-            case EffectType.Pulse: {
-                drawPulse(ctx, postion);
-                break;
-            }
-        }
+    graphicComponent.effects?.filter(effect => effect.order === EffectRenderingOrder.Before).forEach(effect => {
+        effectSelector(effect, ctx, postion);
     });
 
     ctx.save();
@@ -26,31 +20,23 @@ export function drawPointer(ctx: CanvasRenderingContext2D, postion: PositionComp
     ctx.fill();
     ctx.restore();
 
-    effects?.filter(effect => effect.order === EffectRenderingOrder.After).forEach(effect => {
-        switch (effect.type) {
-            case EffectType.Pulse: {
-                drawPulse(ctx, postion);
-                break;
-            }
-            case EffectType.Glow: {
-                drawGlow(ctx, postion);
-                break;
-            }
-
-        }
+    graphicComponent.effects?.filter(effect => effect.order === EffectRenderingOrder.After).forEach(effect => {
+        effectSelector(effect, ctx, postion);
     });
 }
 
-// function effectSelector(effect: Effect) {
-//     switch (effect.type) {
-//         case EffectType.Pulse: {
-//             drawPulse(ctx, postion);
-//             break;
-//         }
-//         case EffectType.Glow: {
-//             drawGlow(ctx, postion);
-//             break;
-//         }
 
-//     }
-// }
+// private
+
+function effectSelector(effect: Effect, ctx: CanvasRenderingContext2D, position: PositionComponent) {
+    switch (effect.type) {
+        case EffectType.Pulse: {
+            drawPulse(ctx, position, effect);
+            break;
+        };
+        case EffectType.Glow: {
+            drawGlow(ctx, position, effect);
+            break;
+        };
+    }
+}
